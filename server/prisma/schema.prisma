@@ -1,0 +1,87 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  name            String
+  createdAt       DateTime         @default(now())
+  activities      Activity[]
+  goals           Goal[]
+  achievements    Achievement[]
+  recommendations Recommendation[]
+}
+
+model Activity {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    String   // "transportation", "food", "energy", "waste"
+  type        String   // "car", "bike", "bus", "train", "flight", "walking", "beef", "poultry", etc.
+  amount      Float    // km, meals, kWh, hours, kg
+  unit        String   // "km", "meals", "kWh", "hours", "kg"
+  carbonTons  Float    // calculated kg of CO2 equivalent (named carbonTons, but we store in kg CO2)
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@index([userId, date])
+}
+
+model Goal {
+  id                 String   @id @default(uuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title              String
+  description        String
+  category           String   // "transportation", "food", "energy", "waste", "overall"
+  targetValue        Float    // e.g. target reduction in kg CO2
+  currentValue       Float    // current logged value
+  unit               String   // "kg CO2"
+  deadline           DateTime
+  isCompleted        Boolean  @default(false)
+  createdAt          DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Achievement {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeCode   String
+  name        String
+  description String
+  icon        String
+  unlockedAt  DateTime @default(now())
+
+  @@unique([userId, badgeCode])
+}
+
+model Recommendation {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category        String
+  title           String
+  content         String
+  potentialSaving Float
+  isImplemented   Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+}
+
+model EducationHubFact {
+  id        String   @id @default(uuid())
+  category  String
+  title     String
+  content   String
+  source    String?
+  createdAt DateTime @default(now())
+}
