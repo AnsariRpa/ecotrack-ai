@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Activity } from "../types/index.js";
-import { Calendar, PlusCircle, Trash2, ShieldAlert } from "lucide-react";
+import { PlusCircle, Trash2, ShieldAlert } from "lucide-react";
 
 interface TrackerViewProps {
   activities: Activity[];

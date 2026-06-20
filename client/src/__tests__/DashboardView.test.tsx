@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import React from "react";
 import { DashboardView } from "../components/DashboardView.tsx";
 import { DashboardSummary } from "../types/index.ts";
 
@@ -8,7 +7,7 @@ vi.mock("lucide-react", () => ({
   Trash2: () => <span data-testid="trash-icon" />,
   ShieldAlert: () => <span data-testid="shield-icon" />,
   Award: () => <span data-testid="award-icon" />,
-  Footprint: () => <span data-testid="footprint-icon" />,
+  Footprints: () => <span data-testid="footprints-icon" />,
   Sparkles: () => <span data-testid="sparkles-icon" />,
   PlusCircle: () => <span data-testid="plus-icon" />,
 }));

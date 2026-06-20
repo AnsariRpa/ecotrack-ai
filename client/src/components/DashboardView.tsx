@@ -1,6 +1,6 @@
 import React from "react";
-import { DashboardSummary, Activity } from "../types/index.js";
-import { Trash2, ShieldAlert, Award, Footprint, Sparkles, PlusCircle } from "lucide-react";
+import { DashboardSummary } from "../types/index.js";
+import { Trash2, ShieldAlert, Award, Footprints, Sparkles, PlusCircle } from "lucide-react";
 
 interface DashboardViewProps {
   summary: DashboardSummary | null;
@@ -85,7 +85,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="glass-panel metric-card">
           <div className="metric-header">
             <span>DAILY IMPACT</span>
-            <Footprint size={16} style={{ color: "var(--accent-emerald)" }} />
+            <Footprints size={16} style={{ color: "var(--accent-emerald)" }} />
           </div>
           <div className="metric-value">{scores.daily}</div>
           <div className="metric-unit">kg CO2eq logged today</div>
@@ -97,7 +97,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="glass-panel metric-card">
           <div className="metric-header">
             <span>WEEKLY IMPACT</span>
-            <Footprint size={16} style={{ color: "var(--accent-blue)" }} />
+            <Footprints size={16} style={{ color: "var(--accent-blue)" }} />
           </div>
           <div className="metric-value">{scores.weekly}</div>
           <div className="metric-unit">kg CO2eq past 7 days</div>
@@ -109,7 +109,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="glass-panel metric-card">
           <div className="metric-header">
             <span>MONTHLY IMPACT</span>
-            <Footprint size={16} style={{ color: "var(--accent-amber)" }} />
+            <Footprints size={16} style={{ color: "var(--accent-amber)" }} />
           </div>
           <div className="metric-value">{scores.monthly}</div>
           <div className="metric-unit">kg CO2eq past 30 days</div>
