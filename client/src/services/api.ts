@@ -1,4 +1,12 @@
-import { DashboardSummary, Activity, Goal, Achievement, Recommendation, EducationHubFact } from "../types/index.js";
+import {
+  DashboardSummary,
+  Activity,
+  Goal,
+  Achievement,
+  Recommendation,
+  EducationHubFact,
+  ForecastResponse,
+} from "../types/index.js";
 
 const API_BASE = "/api";
 
@@ -14,7 +22,8 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const payload = await response.json();
 
   if (!response.ok) {
-    const errMsg = payload?.error?.message || payload?.errors?.[0]?.message || "API request failed";
+    const errMsg =
+      payload?.error?.message || payload?.errors?.[0]?.message || "API request failed";
     throw new Error(errMsg);
   }
 
@@ -27,10 +36,10 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  // Summary
+  // ── Dashboard ──────────────────────────────────────────────────────────────
   getSummary: (): Promise<DashboardSummary> => fetchJson<DashboardSummary>("/summary"),
 
-  // Activities
+  // ── Activities ─────────────────────────────────────────────────────────────
   getActivities: (category?: string): Promise<Activity[]> => {
     const url = category ? `/activities?category=${category}` : "/activities";
     return fetchJson<Activity[]>(url);
@@ -49,7 +58,7 @@ export const api = {
     });
   },
 
-  // Goals
+  // ── Goals ──────────────────────────────────────────────────────────────────
   getGoals: (): Promise<Goal[]> => fetchJson<Goal[]>("/goals"),
   createGoal: (
     goal: Omit<Goal, "id" | "userId" | "currentValue" | "isCompleted" | "createdAt">
@@ -65,13 +74,20 @@ export const api = {
     });
   },
 
-  // Achievements
+  // ── Achievements ───────────────────────────────────────────────────────────
   getAchievements: (): Promise<Achievement[]> => fetchJson<Achievement[]>("/achievements"),
 
-  // AI Carbon Coach Recommendations
+  // ── AI Carbon Coach (Gemini-powered with fallback) ────────────────────────
   getCoachAdvice: (): Promise<Recommendation[]> => fetchJson<Recommendation[]>("/coach/advice"),
 
-  // Education Hub Facts
+  // ── Analytics & Forecasting ───────────────────────────────────────────────
+  getForecast: (days: 7 | 30 = 7): Promise<ForecastResponse> =>
+    fetchJson<ForecastResponse>(`/analytics/forecast?days=${days}`),
+
+  getAnalyticsSummary: () =>
+    fetchJson<Record<string, unknown>>("/analytics/summary"),
+
+  // ── Education Hub ──────────────────────────────────────────────────────────
   getEducationFacts: (category?: string): Promise<EducationHubFact[]> => {
     const url = category ? `/education?category=${category}` : "/education";
     return fetchJson<EducationHubFact[]>(url);

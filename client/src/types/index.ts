@@ -50,6 +50,14 @@ export interface Recommendation {
   potentialSaving: number;
   isImplemented: boolean;
   createdAt: string;
+  // Explainable AI fields (populated by Gemini or fallback engine)
+  reasoning?: string;
+  behaviourInsight?: string;
+  reductionMethod?: string;
+  sustainabilityImpact?: string;
+  actionableSteps?: string[];
+  confidence?: "high" | "medium" | "low";
+  aiGenerated?: boolean;
 }
 
 export interface EducationHubFact {
@@ -76,4 +84,35 @@ export interface DashboardSummary {
   };
   badgeCount: number;
   recentActivities: Activity[];
+}
+
+// ── Forecasting Types ────────────────────────────────────────────────────────
+
+export interface DailyForecast {
+  date: string;
+  projectedKgCO2: number;
+  confidence: number;
+}
+
+export interface CarbonForecast {
+  forecastDays: number;
+  projectedTotalKgCO2: number;
+  dailyBreakdown: DailyForecast[];
+  goalAchievementProbability: number;
+  trend: "improving" | "stable" | "worsening";
+  insights: string[];
+  aiGenerated: boolean;
+}
+
+export interface ForecastResponse {
+  forecast: CarbonForecast;
+  activeGoal: {
+    id: string;
+    title: string;
+    targetValue: number;
+    unit: string;
+    deadline: string;
+  } | null;
+  historicalDataPoints: number;
+  analysedPeriodDays: number;
 }

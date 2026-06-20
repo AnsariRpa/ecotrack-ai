@@ -1,15 +1,26 @@
+/**
+ * API Router — EcoTrack AI
+ *
+ * Wires all routes with validation middleware and optional Firebase auth.
+ * Includes the new /analytics/forecast and /analytics/summary endpoints.
+ */
 import { Router } from "express";
 import { body } from "express-validator";
 import { validateRequest } from "../middleware/validation.js";
+import { authenticateUser } from "../middleware/auth.js";
 import { createActivity, getActivities, deleteActivity, getDashboardSummary, } from "../controllers/activityController.js";
 import { createGoal, getGoals, deleteGoal } from "../controllers/goalController.js";
 import { getAchievements } from "../controllers/achievementController.js";
 import { getCoachingAdvice } from "../controllers/coachController.js";
 import { getFacts } from "../controllers/educationController.js";
+import { getForecast, getAnalyticsSummary } from "../controllers/analyticsController.js";
 const router = Router();
-// Dashboard Summary
+// ── Global Auth Middleware ────────────────────────────────────────────────────
+// Attaches req.user to all routes. Falls back to dev user when Firebase is unconfigured.
+router.use(authenticateUser);
+// ── Dashboard ─────────────────────────────────────────────────────────────────
 router.get("/summary", getDashboardSummary);
-// Activities Routing
+// ── Activities ────────────────────────────────────────────────────────────────
 router.post("/activities", [
     body("category")
         .isIn(["transportation", "food", "energy", "waste"])
@@ -23,7 +34,7 @@ router.post("/activities", [
 ], createActivity);
 router.get("/activities", getActivities);
 router.delete("/activities/:id", deleteActivity);
-// Goals Routing
+// ── Goals ─────────────────────────────────────────────────────────────────────
 router.post("/goals", [
     body("title").trim().notEmpty().withMessage("Goal title is required"),
     body("category")
@@ -46,10 +57,13 @@ router.post("/goals", [
 ], createGoal);
 router.get("/goals", getGoals);
 router.delete("/goals/:id", deleteGoal);
-// Achievements Routing
+// ── Achievements ──────────────────────────────────────────────────────────────
 router.get("/achievements", getAchievements);
-// Coach Routing
+// ── AI Coach ──────────────────────────────────────────────────────────────────
 router.get("/coach/advice", getCoachingAdvice);
-// Education Routing
+// ── Analytics & Forecasting (Gemini-powered) ─────────────────────────────────
+router.get("/analytics/forecast", getForecast);
+router.get("/analytics/summary", getAnalyticsSummary);
+// ── Education ─────────────────────────────────────────────────────────────────
 router.get("/education", getFacts);
 export default router;
