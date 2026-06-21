@@ -1,30 +1,25 @@
 steps:
-  # Step 1: Start
-
-  # Step 2: Build Docker image (multi-stage)
+  # Build Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    id: build-image
+    id: 'build-image'
     args:
       - 'build'
       - '-t'
       - 'us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app:latest'
-      - '-t'
-      - 'us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app:latest'
       - '.'
-    waitFor: ['-']
 
-  # Step 3: Push image to Artifact Registry
+  # Push image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    id: push-image
+    id: 'push-image'
     args:
       - 'push'
-      - '--all-tags'
-      - 'us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app'
-    waitFor: ['build-image']
+      - 'us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app:latest'
+    waitFor:
+      - 'build-image'
 
-  # Step 4: Deploy to Cloud Run
+  # Deploy to Cloud Run
   - name: 'gcr.io/cloud-builders/gcloud'
-    id: deploy-cloud-run
+    id: 'deploy-cloud-run'
     args:
       - 'run'
       - 'deploy'
@@ -39,7 +34,8 @@ steps:
       - '--min-instances=0'
       - '--max-instances=10'
       - '--set-env-vars=NODE_ENV=production'
-    waitFor: ['push-image']
+    waitFor:
+      - 'push-image'
 
 substitutions:
   _PROJECT_ID: 'pwapril'
@@ -50,5 +46,4 @@ options:
   machineType: 'E2_HIGHCPU_8'
 
 images:
-  - 'us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app:latest'
   - 'us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app:latest'

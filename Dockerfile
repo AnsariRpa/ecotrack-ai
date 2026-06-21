@@ -1,37 +1,36 @@
-# Stage 1: Build the React client
-FROM node:20-alpine AS client-builder
-WORKDIR /app/client
-COPY client/package*.json ./
-RUN npm ci
-COPY client/ ./
-RUN npm run build
+# Stage 1 - Build
 
-# Stage 2: Build the Node/Express server
-FROM node:20-alpine AS server-builder
-WORKDIR /app/server
-COPY server/package*.json ./
-RUN npm ci
-COPY server/ ./
-RUN npx prisma generate
-RUN npm run build
+FROM node:20-alpine AS builder
 
-# Stage 3: Production runner
-FROM node:20-alpine
 WORKDIR /app
 
-# Copy built server assets
-COPY --from=server-builder /app/server/dist ./server/dist
-COPY --from=server-builder /app/server/package*.json ./server/
-COPY --from=server-builder /app/server/node_modules ./server/node_modules
-COPY --from=server-builder /app/server/prisma ./server/prisma
+# Copy workspace manifests
+COPY package*.json ./
+COPY client/package.json ./client/
+COPY server/package.json ./server/
 
-# Copy built client static assets
-COPY --from=client-builder /app/client/dist ./client/dist
+# Install dependencies
+RUN npm ci
 
-# Setup Environment and Expose Port
-WORKDIR /app/server
+# Copy source code
+COPY . .
+
+# Generate Prisma client
+RUN cd server && npx prisma generate
+
+# Build application
+RUN npm run build
+
+# Stage 2 - Production
+
+FROM node:20-alpine
+
+WORKDIR /app
+
 ENV NODE_ENV=production
 ENV PORT=8080
+
+COPY --from=builder /app .
 
 EXPOSE 8080
 
