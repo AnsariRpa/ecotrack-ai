@@ -48,7 +48,7 @@ steps:
     waitFor: ['push-image']
 
 substitutions:
-  _PROJECT_ID: 'your-gcp-project-id'
+  _PROJECT_ID: 'pwapril'
   _REGION: 'us-central1'
 
 options:
