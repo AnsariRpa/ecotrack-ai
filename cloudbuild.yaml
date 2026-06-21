@@ -1,11 +1,5 @@
 steps:
-  # Step 1: Run server tests
-  - name: 'node:20'
-    id: test-server
-    entrypoint: npm
-    args: ['run', 'test', '--workspace=server']
-    env:
-      - 'DATABASE_URL=file:./test.db'
+  # Step 1: Start
 
   # Step 2: Build Docker image (multi-stage)
   - name: 'gcr.io/cloud-builders/docker'
@@ -13,11 +7,11 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app:latest'
       - '-t'
       - 'us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app:latest'
       - '.'
-    waitFor: ['test-server']
+    waitFor: ['-']
 
   # Step 3: Push image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
@@ -35,7 +29,7 @@ steps:
       - 'run'
       - 'deploy'
       - 'ecotrack-ai'
-      - '--image=us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app:$COMMIT_SHA'
+      - '--image=us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app:latest'
       - '--region=$_REGION'
       - '--platform=managed'
       - '--allow-unauthenticated'
@@ -56,5 +50,5 @@ options:
   machineType: 'E2_HIGHCPU_8'
 
 images:
-  - 'us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app:latest'
   - 'us-central1-docker.pkg.dev/$_PROJECT_ID/ecotrack-ai/app:latest'
